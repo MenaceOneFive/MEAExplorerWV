@@ -108,5 +108,10 @@ namespace PluginTalktableWV
             host.AddModJob(main.Name, "Talktable Replacement", m.ToArray());
             MessageBox.Show("Done.");
         }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
     }
 }

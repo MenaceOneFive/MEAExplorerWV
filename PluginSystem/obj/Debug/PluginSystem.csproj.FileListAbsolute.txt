@@ -1,0 +1,11 @@
+F:\Users\GIT\MEAExplorerWV\PluginSystem\obj\Debug\PluginSystem.csproj.AssemblyReference.cache
+F:\Users\GIT\MEAExplorerWV\PluginSystem\obj\Debug\PluginSystem.csproj.CoreCompileInputs.cache
+F:\Users\GIT\MEAExplorerWV\PluginSystem\bin\Debug\PluginSystem.dll
+F:\Users\GIT\MEAExplorerWV\PluginSystem\bin\Debug\PluginSystem.pdb
+F:\Users\GIT\MEAExplorerWV\PluginSystem\bin\Debug\FBXWrapper.dll
+F:\Users\GIT\MEAExplorerWV\PluginSystem\bin\Debug\ZstdNet.dll
+F:\Users\GIT\MEAExplorerWV\PluginSystem\obj\Debug\PluginSystem.csproj.CopyComplete
+F:\Users\GIT\MEAExplorerWV\PluginSystem\obj\Debug\PluginSystem.dll
+F:\Users\GIT\MEAExplorerWV\PluginSystem\obj\Debug\PluginSystem.pdb
+C:\Users\Station\RiderProjects\MEATranslation\MEATranslation\Plugin\PluginSystem.dll
+C:\Users\Station\RiderProjects\MEATranslation\MEATranslation\Plugin\PluginSystem.pdb

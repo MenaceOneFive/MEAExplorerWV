@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>C:\Users\Station\RiderProjects\MEATranslation\MEATranslation\Plugin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FBXWrapper">
+      <HintPath>.\FBXWrapper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -40,7 +43,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZstdNet">
-      <HintPath>..\..\Zstd\Zstd\bin\Release\ZstdNet.dll</HintPath>
+      <HintPath>.\ZstdNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -59,12 +62,6 @@
     <Compile Include="FB\TextureAsset.cs" />
     <Compile Include="Helper\PSKExporter.cs" />
     <Compile Include="Helper\PSKFile.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FBXWrapper\FBXWrapper\FBXWrapper.vcxproj">
-      <Project>{5fd373d3-62a6-4144-9c48-e81789c2ea47}</Project>
-      <Name>FBXWrapper</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
