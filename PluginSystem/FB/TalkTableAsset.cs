@@ -326,22 +326,25 @@ namespace PluginSystem
                 StringList.Add(t);
             }
             BitStream.Add(curr);
-            Helpers.WriteInt(s, (int)magic);
-            Helpers.WriteInt(s, (int)unk01);
-            Helpers.WriteInt(s, 0x38 + NodeList.Count * 4 + StringList.Count * 8);
-            Helpers.WriteUShort(s, unk02);
-            //Helpers.WriteUShort(s, 4);
-            Helpers.WriteUShort(s, unk03);
-            Helpers.WriteInt(s, (int)unk04);
-            Helpers.WriteInt(s, (int)unk05);
-            Helpers.WriteInt(s, NodeList.Count);
-            Helpers.WriteInt(s, 0x38);
-            Helpers.WriteInt(s, StringList.Count);
-            Helpers.WriteInt(s, 0x38 + NodeList.Count * 4);
+            var Offset = 0x38 + NodeList.Count * 4 + StringList.Count * 8;
+            //내가 추가한 부분:
+            //엔진은 첫 4바이트의 오프셋 값을 읽어야 이 파일을 사용할 수 있음 
+            Helpers.WriteInt(s, Offset);
+            Helpers.WriteInt(s, (int)magic);                         //매직넘버
+            Helpers.WriteInt(s, (int)unk01);                         //UNK1
+            Helpers.WriteInt(s, Offset);                             //오프셋
+            Helpers.WriteUShort(s, unk02);                           //UNK2
+            Helpers.WriteUShort(s, unk03);                           //UNK3
+            Helpers.WriteInt(s, (int)unk04);                         //UNK4
+            Helpers.WriteInt(s, (int)unk05);                         //UNK5
+            Helpers.WriteInt(s, NodeList.Count);                     //허프만 노드 갯수
+            Helpers.WriteInt(s, 0x38);                             //허프만 노드 오프셋
+            Helpers.WriteInt(s, StringList.Count);                   //문자 리스트
+            Helpers.WriteInt(s, 0x38 + NodeList.Count * 4);        //문자 오프셋
             Helpers.WriteInt(s, 0);
-            Helpers.WriteInt(s, 0x38 + NodeList.Count * 4 + StringList.Count * 8);
+            Helpers.WriteInt(s, Offset);
             Helpers.WriteInt(s, 0);
-            Helpers.WriteInt(s, 0x38 + NodeList.Count * 4 + StringList.Count * 8);
+            Helpers.WriteInt(s, Offset);
 
             foreach (int i in NodeList)
                 Helpers.WriteInt(s, i);
