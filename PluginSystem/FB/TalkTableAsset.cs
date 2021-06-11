@@ -23,6 +23,8 @@ namespace PluginSystem
         List<StringID> StringList;
         List<uint> BitStream;
 
+        #region Classes 
+
         public class HuffNode
         {
             public HuffNode e0; //좌노드
@@ -51,6 +53,7 @@ namespace PluginSystem
             public uint ID;
             public uint offset;
         }
+        #endregion
 
         public uint magic;
         public int unk01;
@@ -80,6 +83,17 @@ namespace PluginSystem
 
         public bool Read(MemoryStream stream)
         {
+
+            #region  First16Byte
+            //Frosty에서 출력된 처음 16바이트를 소거하는 파트
+            byte[] tmpArray1;//입력 받은 원본 스트림을 저장하는 파트 
+            byte[] tmpArray2; 
+            tmpArray1 = stream.ToArray();
+            tmpArray2 = new byte[tmpArray1.Length - 16];
+            Array.Copy(tmpArray1, 16, tmpArray2, 0, tmpArray1.Length - 16);
+            stream = new MemoryStream(tmpArray2);
+            #endregion 
+            
             magic = Helpers.ReadUInt(stream);
             if (magic != 0xD78B40EB) //매직넘버 같음
             {
@@ -94,14 +108,16 @@ namespace PluginSystem
             unk03 = Helpers.ReadUShort(stream);      //2바이트 이동
             unk04 = Helpers.ReadInt(stream);         //4바이트 이동
             unk05 = Helpers.ReadInt(stream);         //4바이트 이동 -> 총 12바이트 이동
-            NodeCount = Helpers.ReadInt(stream);     
-            NodeOffset = Helpers.ReadInt(stream);   
-            StringCount = Helpers.ReadInt(stream);   
-            StringOffset = Helpers.ReadInt(stream); 
+            NodeCount = Helpers.ReadInt(stream);     //허프만 노드 카운트
+            NodeOffset = Helpers.ReadInt(stream);    //허프만 노드 오프셋
+            StringCount = Helpers.ReadInt(stream);   //스트링 카운트
+            StringOffset = Helpers.ReadInt(stream);  //스트링 오프셋
             Data3Count = Helpers.ReadInt(stream); 
             Data3Offset = Helpers.ReadInt(stream);
             Data4Count = Helpers.ReadInt(stream); 
             Data4Offset = Helpers.ReadInt(stream);
+
+            #region DebugLogs
             
             Debug.WriteLine($"데이터 오프셋 : {DataOffset.ToString("X8")}");
             Debug.WriteLine($"2바이트 이동 : {unk02}");
@@ -111,6 +127,8 @@ namespace PluginSystem
             Debug.WriteLine($"노드 개수 : {NodeCount}, 노드 오프셋 : {NodeOffset.ToString("X8")}");
             Debug.WriteLine($"문자열 개수 : {StringCount}, 문자열 오프셋 : {StringOffset.ToString("X8")}");
             
+            #endregion
+            
             if (Data4Count > 0)
             {
                 Data5Count = Helpers.ReadInt(stream);
@@ -118,7 +136,7 @@ namespace PluginSystem
             }
             
             //MemoryStream.Seek Method
-            //현재 스트림 내의 위치를 지정된 값으로 설정합니다
+            //현재 스트림 내의 위치를 지정된 값( (NodeOffset) + SeekOrigin.Begin )으로 설정합니다
             //노드, 문자열 오프셋은 노드의 시작위치 문자열의 시작위치임
             //노드 = 허프만노드인듯
             stream.Seek(NodeOffset, SeekOrigin.Begin); 
@@ -126,8 +144,16 @@ namespace PluginSystem
             
             //허프만 노드를 리스트에 담는다
             for (int i = 0; i < NodeCount; i++)
+            {
                 Huffman.Add(Helpers.ReadInt(stream));
+            }
             
+            Debug.WriteLine("허프만 리스트");
+            foreach (var item in Huffman)
+            {
+                Debug.Write($"({item} )\t");
+            }
+
             //스트링의 ID와 데이터를 리스트에 담는다.
             stream.Seek(StringOffset, SeekOrigin.Begin);
             StringIDs = new List<uint>();
@@ -146,14 +172,10 @@ namespace PluginSystem
             
             //TalkTableAsset의 멤버
             Strings = new List<STR>();
-            bool firstOne = false;
 
-            Debug.WriteLine($"허프만 노드 개수 : {Huffman.Count}");
-            foreach (var Node in Huffman)
-            {
-                Debug.Write($"{(char)Node}");
-            }
-            Debug.WriteLine("");
+
+            
+            //Q:) 해당 StringID에 매핑된 문자가 아무것도 없으면?
             //STR(대사) 형태로 변환하는 작업
             for (int i = 0; i < StringIDs.Count; i++)
             {
@@ -163,15 +185,9 @@ namespace PluginSystem
                 int Index = StringData[i] >> 5;
                 int Shift = StringData[i] & 0x1F; //왜 시프트를 하는지 모르겠다 시프트도 아닌 거 같은데 &이면 AND연산임 10진법으로 31
 
-                if (!firstOne)
-                {
-                    //값 변경 조사용으로 3회 실시 + 시프트연산 A >> B = A / 2^B 를 의미함
-                    Debug.WriteLine($"StringData[{i}] : {StringData[i]} Index : {Index} Shift : {Shift}");
-                    if (i < 3)
-                        firstOne = true;
-                }
-
                 StringBuilder sb = new StringBuilder();
+
+                int count2 = 0;
                 while (true)
                 {
                     //허프만 노드가 자식노드가 2개라서?
@@ -180,6 +196,8 @@ namespace PluginSystem
                     //허프만 노드가 1개 이상이라면
                     while (e >= 0)
                     {
+                        //offset == 시작위치
+                        //Data배열의 INDEX번 위치에서 
                         uint d = Data[Index];
                         int offset = (int)((d >> Shift) & 1);
                         e = Huffman[(e * 2) + offset];
@@ -197,6 +215,14 @@ namespace PluginSystem
                         break;
                     else
                         sb.Append((char)c);
+                    // // Debug.WriteLine($"허프만e {e.ToString("x8")} 컨버트 문자:{ c.ToString("x8") } => {(char)c} \t");
+                    // if (count2 % 5 == 0)
+                    // {
+                    //     count2 = 0;
+                    //     Debug.WriteLine("");
+                    // }
+
+                    count2++;
                 }
                 ValueString.Value = sb.ToString();
                 Strings.Add(ValueString);
@@ -204,26 +230,28 @@ namespace PluginSystem
             return true;
         }
 
+        
+        
+        
+        
         /// <summary>
         /// 유용한 링크
         /// https://daeguowl.tistory.com/98 -> 아스키, 유니코드, UTF-8 정리
         /// </summary>
         /// <param name="s"></param>
+        /// 
         public void Save(Stream s)
         {
-            long[] weights = new long[256 * 256];
             //weights.length = 65,536;
             //한글 완성형은 2350개
             //인덱스오류가능성은 없음
+            long[] weights = new long[256 * 256];
+            
             foreach (STR line in Strings)
             {
                 weights[0]++;
                 foreach (char c in line.Value)
                 {
-                    //ASCII 기준으로 치환하는 듯
-                    //놉 C#의 Char은 16비트 -> 2바이트임 즉 한글도 문제없음
-                    //하지만 프로스트바이트 엔진이 뭘 쓰는지가 문제인데 C++이랑 C#둘 다 쓴다고 함
-                    //정확히는 바이오웨어가 이 호프만 압축을 위해 작성한 코드의 언어가 중요할 듯
                     weights[(ushort)c]++;
                 }
 
@@ -234,10 +262,11 @@ namespace PluginSystem
             Dictionary<char, long> weighttable = new Dictionary<char, long>();
             for (int i = 0; i < 256 * 256; i++)
                 if (weights[i] > 0)
-                    weighttable.Add((char)i, weights[i]);
+                {
+                    weighttable.Add((char) i, weights[i]);
+                }
 
-            //본격적으로 허프만 압축이 시작되는 부분
-            //있는 문자들만 노드로 추가함
+            //본격적으로 허프만 압축이 시작되는 부분 
             List<HuffNode> nodes = new List<HuffNode>();
             foreach (KeyValuePair<char, long> w in weighttable)
                 nodes.Add(new HuffNode(w.Key, w.Value));
@@ -250,8 +279,8 @@ namespace PluginSystem
                 while (run)
                 {
                     run = false;
+                    //허프만 알고리즘 : 빈도를 비교해서 순서바꾸기 오름차순으로 정렬
                     for (int i = 0; i < nodes.Count - 1; i++)
-                        //크기비교해서 순서바꾸기 오름차순으로 정렬
                         if (nodes[i].w > nodes[i + 1].w)
                         {
                             run = true;
@@ -260,6 +289,7 @@ namespace PluginSystem
                             nodes[i + 1] = t;       
                         }
                 }
+                
                 //허프만 알고리즘의 핵심 제일 작은 2개를 합해서 새로운 노드를 생성
                 //그 노드를 기존 배열에 추가하고 이 과정을 반복
                 //여기서 e0과 e1은 제일 작은 노드들임
@@ -281,16 +311,14 @@ namespace PluginSystem
             while (!root.hasIndex)
                 CalcIndex(root);
             
-            
-            //<버그 의심존>
-            AlphaEntry[] alphabet = GetAlphabet(root, new List<bool>());
+            //각 문자의 경로를 계산 
+            AlphaEntry[] alphabet = GetCharacter(root, new List<bool>());
             BitStream = new List<uint>();
             StringList = new List<StringID>();
             uint curr = 0;
             uint index = 0;
             byte shift = 0;
-            //</버그 의심존>
-            //노가다가 아~~~~주 많을 것으로 예정되는 파트
+            
             foreach (STR str in Strings)
             {
                 StringID t = new StringID();
@@ -298,20 +326,29 @@ namespace PluginSystem
                 t.offset = index << 5;
                 t.offset += shift;
                 string line = str.Value + "\0";
+                //대사의 각 문자를 테이블과 대조해서 암호화 하는 부분
                 foreach (char c in line)
                 {
+                    //대사에 있는 각 C가 alpha에 있는 요소 a의 c와 동일하다면
+                    //a를 사용해서 부호화 할 것!
                     AlphaEntry alpha = null;
                     foreach (AlphaEntry a in alphabet)
                         if (a.c == c)
                             alpha = a;
+                    // 문자 C를 허프만 트리에 있는 노드의 위치로 치환하는 부분
+                    // 의심존 2
                     foreach (bool step in alpha.list)
                     {
+                        //오른쪽이면
                         byte b = 0;
+                        //왼쪽이면
                         if (step)
                             b = 1;
                         if (shift < 32)
                         {
+                            //
                             curr += (uint)(b << shift);
+                            //현재 위치
                             shift++;
                         }
                         if (shift == 32)
@@ -326,10 +363,17 @@ namespace PluginSystem
                 StringList.Add(t);
             }
             BitStream.Add(curr);
-            var Offset = 0x38 + NodeList.Count * 4 + StringList.Count * 8;
+
+            #region  SaveToMemoryStream
+            
+            var hex = 0x38;
+            var Offset = hex + NodeList.Count * 4 + StringList.Count * 8;
             //내가 추가한 부분:
             //엔진은 첫 4바이트의 오프셋 값을 읽어야 이 파일을 사용할 수 있음 
             Helpers.WriteInt(s, Offset);
+            Helpers.WriteInt(s, 0x0000);
+            Helpers.WriteInt(s, 0x0000);
+            Helpers.WriteInt(s, 0x0000);
             Helpers.WriteInt(s, (int)magic);                         //매직넘버
             Helpers.WriteInt(s, (int)unk01);                         //UNK1
             Helpers.WriteInt(s, Offset);                             //오프셋
@@ -338,47 +382,60 @@ namespace PluginSystem
             Helpers.WriteInt(s, (int)unk04);                         //UNK4
             Helpers.WriteInt(s, (int)unk05);                         //UNK5
             Helpers.WriteInt(s, NodeList.Count);                     //허프만 노드 갯수
-            Helpers.WriteInt(s, 0x38);                             //허프만 노드 오프셋
+            Helpers.WriteInt(s, hex);                                //허프만 노드 오프셋
             Helpers.WriteInt(s, StringList.Count);                   //문자 리스트
-            Helpers.WriteInt(s, 0x38 + NodeList.Count * 4);        //문자 오프셋
+            Helpers.WriteInt(s, hex + NodeList.Count * 4);         //문자 오프셋
             Helpers.WriteInt(s, 0);
             Helpers.WriteInt(s, Offset);
             Helpers.WriteInt(s, 0);
             Helpers.WriteInt(s, Offset);
 
+            Debug.WriteLine($"허프만 노드 수{NodeList.Count}");
+            //허프만 노드 저장
             foreach (int i in NodeList)
+            {
                 Helpers.WriteInt(s, i);
+            }
+
+            //문자열 ID저장
             foreach (StringID sid in StringList)
             {
                 Helpers.WriteInt(s, (int)sid.ID);
                 Helpers.WriteInt(s, (int)sid.offset);
             }
+            //문자열 저장
             foreach (int i in BitStream)
                 Helpers.WriteInt(s, i);
+            
+            #endregion
             
         }
         
         public void CalcIndex(HuffNode h)
         {
-            //재귀함수임
-            
-            //재귀함수 탈출조건
             if (h.e0 == null && h.e1 == null && !h.hasIndex)
             {
                 int u;
                 if (((ushort)h.c) >= 0x100)
-                    u = (short)(0xFFFF - (ushort)h.c);
+                    u = (int)((int)(h.c + 1) * -1); //-> 한국어 제한적 출력 성공 1차 외계어 2차 한국어
+                    //u = (int)((uint)h.c - 0xFF00);
+                    //u = (int)((uint)h.c - 0XFFF0); -> 1차 한국어 2차 외계어
+                    //u = (int)((uint)h.c - 0X0FFF);튕김
+                    //u = (int)((int)h.c - 0XFFFF); //-> 한국어 제한적 출력 성공 1차 외계어 2차 한국어
                 else
-                    u = (int)(0xFFFFFFFF - (uint)h.c);
+                {
+                    u = (int) (0xFFFFFFFF - (uint) h.c);
+                }
+
                 h.index = u;
                 h.hasIndex = true;
+                Debug.Write((char)h.c);
             }
             else
             {
                 //재귀호출지점
                 CalcIndex(h.e0);
                 CalcIndex(h.e1);
-                //작업중단점
                 if (h.e0.hasIndex && h.e1.hasIndex)
                 {
                     h.index = NodeList.Count / 2;
@@ -389,9 +446,10 @@ namespace PluginSystem
             }
         }
 
-        public AlphaEntry[] GetAlphabet(HuffNode h, List<bool> list)
+        public AlphaEntry[] GetCharacter(HuffNode h, List<bool> list)
         {
             List<AlphaEntry> result = new List<AlphaEntry>();
+            //자식노드가 단말노드인 경우
             if (h.e0.e0 == null)
             {
                 AlphaEntry e = new AlphaEntry();
@@ -402,13 +460,15 @@ namespace PluginSystem
                 e.list = t.ToArray();
                 result.Add(e);
             }
+            //자식노드가 단말노드가 아닌 경우
             else
             {
                 List<bool> t = new List<bool>();
                 t.AddRange(list);
                 t.Add(false);
-                result.AddRange(GetAlphabet(h.e0, t));
+                result.AddRange(GetCharacter(h.e0, t));
             }
+            
             if (h.e1.e0 == null)
             {
                 AlphaEntry e = new AlphaEntry();
@@ -424,8 +484,9 @@ namespace PluginSystem
                 List<bool> t = new List<bool>();
                 t.AddRange(list);
                 t.Add(true);
-                result.AddRange(GetAlphabet(h.e1, t));
+                result.AddRange(GetCharacter(h.e1, t));
             }
+            
             return result.ToArray();
         }
     }
