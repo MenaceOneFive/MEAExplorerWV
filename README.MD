@@ -3,7 +3,8 @@
 
 <h1>소개</h1>
 
-이 리포지토리는 Zenhax커뮤니티의 WarrentyVoider님의 [zeroKilo/MEAExplorerWV](https://github.com/zeroKilo/MEAExplorerWV) 포크버전입니다. "매스이펙트 안드로메다" 한글 패치를 위해 포크 되었습니다.
+이 리포지토리는 Zenhax커뮤니티의 WarrentyVoider님의 [zeroKilo/MEAExplorerWV](https://github.com/zeroKilo/MEAExplorerWV) 포크버전입니다.
+"매스이펙트 안드로메다" 한글 패치를 위해 포크 되었습니다.
 
 한국어 지원과 FrostyEditor에서 추출된 파일 지원을 위해 PluginSystem.dll에 해당하는 소스만 수정되었습니다. 
 
