@@ -1,0 +1,12 @@
+F:\Users\GIT\MEAExplorerWV\PluginTalktableWV\bin\Debug\PluginTalktableWV.dll
+F:\Users\GIT\MEAExplorerWV\PluginTalktableWV\bin\Debug\PluginTalktableWV.pdb
+F:\Users\GIT\MEAExplorerWV\PluginTalktableWV\bin\Debug\PluginSystem.dll
+F:\Users\GIT\MEAExplorerWV\PluginTalktableWV\bin\Debug\FBXWrapper.dll
+F:\Users\GIT\MEAExplorerWV\PluginTalktableWV\bin\Debug\ZstdNet.dll
+F:\Users\GIT\MEAExplorerWV\PluginTalktableWV\obj\Debug\PluginTalktableWV.csproj.AssemblyReference.cache
+F:\Users\GIT\MEAExplorerWV\PluginTalktableWV\obj\Debug\PluginTalktableWV.TalkTableEditor.resources
+F:\Users\GIT\MEAExplorerWV\PluginTalktableWV\obj\Debug\PluginTalktableWV.csproj.GenerateResource.cache
+F:\Users\GIT\MEAExplorerWV\PluginTalktableWV\obj\Debug\PluginTalktableWV.csproj.CoreCompileInputs.cache
+F:\Users\GIT\MEAExplorerWV\PluginTalktableWV\obj\Debug\PluginTalktableWV.csproj.CopyComplete
+F:\Users\GIT\MEAExplorerWV\PluginTalktableWV\obj\Debug\PluginTalktableWV.dll
+F:\Users\GIT\MEAExplorerWV\PluginTalktableWV\obj\Debug\PluginTalktableWV.pdb

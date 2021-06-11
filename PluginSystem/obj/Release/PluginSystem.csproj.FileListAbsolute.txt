@@ -1,0 +1,8 @@
+F:\Users\GIT\MEAExplorerWV\PluginSystem\bin\Release\PluginSystem.dll
+F:\Users\GIT\MEAExplorerWV\PluginSystem\bin\Release\PluginSystem.pdb
+F:\Users\GIT\MEAExplorerWV\PluginSystem\bin\Release\FBXWrapper.dll
+F:\Users\GIT\MEAExplorerWV\PluginSystem\bin\Release\ZstdNet.dll
+F:\Users\GIT\MEAExplorerWV\PluginSystem\obj\Release\PluginSystem.csproj.CoreCompileInputs.cache
+F:\Users\GIT\MEAExplorerWV\PluginSystem\obj\Release\PluginSystem.csproj.CopyComplete
+F:\Users\GIT\MEAExplorerWV\PluginSystem\obj\Release\PluginSystem.dll
+F:\Users\GIT\MEAExplorerWV\PluginSystem\obj\Release\PluginSystem.pdb
